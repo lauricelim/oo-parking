@@ -4,8 +4,9 @@ class ParkingsController < ApplicationController
   end
 
   def create
-    parking = Parking.new(params)
-    if parking.create
+    parking = Parking.new(parking_params)
+    
+    if parking.save
       render json: {success: true}
     else
       render json: {error: parking.error}
@@ -19,6 +20,12 @@ class ParkingsController < ApplicationController
     else
       render json: {error: parking.error}
     end
+  end
+
+  private
+
+  def parking_params
+    params.require(:parking).permit(:size, :is_available, :distance => [])
   end
   
 end

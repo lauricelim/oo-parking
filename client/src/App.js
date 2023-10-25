@@ -10,19 +10,17 @@ const queryClient = new QueryClient();
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <QueryClientProvider client={queryClient}>
-          <Router>
-            <Routes>
-              <Route exact path='/' element={<Home />} />
-              <Route path='/parking' element={<Parking />} />
-              <Route path='/car' element={<Car />} />
-            </Routes>
-          </Router>
-        </QueryClientProvider>
-      </header>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="App">
+        <Router>
+          <Routes>
+            <Route exact path='/' element={<Home />} />
+            <Route path='/parking' element={<Parking />} />
+            <Route path='/car' element={<Car />} />
+          </Routes>
+        </Router>
+      </div>
+    </QueryClientProvider>
   );
 }
 

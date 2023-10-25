@@ -5,7 +5,7 @@ const Car = () => {
     <>
 		<div>
 			<h1>
-				Parking
+				Park a Car
 			</h1>
 		</div>
     </>

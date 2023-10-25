@@ -1,9 +1,7 @@
-import { useParkings } from "../api/useParkings";
 import { Link } from 'react-router-dom';
+import Button from '@mui/material/Button';
 
 const Home = () => {
-  const {isLoading: isParkingLoading, data: parkings} = useParkings();
-  console.log("data: ", parkings)
 
 	return (
     <>
@@ -11,11 +9,8 @@ const Home = () => {
 			<h1>
 				Home
 			</h1>
-      <Link to="/parking"><button>Configure Parking</button></Link>
-      <Link to="/car"><button>Park a Car</button></Link>
-      { !isParkingLoading && parkings.map((parking)=> 
-        <div key={parking.id}>{parking.id}-{parking.size}-{parking.distance}</div>
-      )}
+      <Link to="/parking"><Button variant="contained">Configure Parking</Button></Link>
+      <Link to="/car"><Button variant="contained">Park a Car</Button></Link>
 		</div>
     </>
 	);
