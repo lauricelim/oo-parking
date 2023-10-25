@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   # root "articles#index"
   resources :parkings
 
-  resources :cars do
+  resources :cars, only: %i[index create destroy show]do
     collection do
       post :park
       post :unpark

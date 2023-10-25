@@ -17,7 +17,6 @@ export const useParkings = () => {
     queryKey: ["parkings"],
     queryFn: fetchParkings
   });
-  console.log(result)
   return result;
 };
 
@@ -43,6 +42,5 @@ export const useCreateParking = (refetchParkings) => {
       alert("Error!");
     }
   });
-  console.log(result)
   return result;
 };
