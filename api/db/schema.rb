@@ -27,7 +27,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_24_150037) do
   create_table "parkings", force: :cascade do |t|
     t.integer "size"
     t.jsonb "distance"
-    t.boolean "is_available"
+    t.boolean "is_available", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

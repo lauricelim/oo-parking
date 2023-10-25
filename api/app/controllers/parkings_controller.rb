@@ -1,6 +1,6 @@
 class ParkingsController < ApplicationController
   def index
-    render json: Parking.all
+    render json: Parking.all.order(:id)
   end
 
   def create
