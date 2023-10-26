@@ -65,7 +65,6 @@ const Parking = () => {
 
 	const selectParking = (id) => {
 		let selected = parkings.find((parking) => parking.id == id)
-		console.log(selected)
 		setSelectedPark(selected)
 		setIsEditing(true)
 	}

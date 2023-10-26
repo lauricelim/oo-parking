@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const options = { mode: "cors" };
 const headers = { "Content-Type": "application/json;charset=utf-8" };
@@ -31,18 +31,22 @@ const createCar = async (params) => {
 };
 
 export const useCreateCar = (refetchCars) => {
-  const result = useMutation({
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
     mutationFn: (data) => {
-			return createCar(data);
+			createCar(data);
 		},
     onSuccess: () => {
       refetchCars();
     },
+    onSettled: () => {
+      queryClient.invalidateQueries(["cars"]);
+    },
     onError: () => {
-      alert("Error!");
+      alert("Error createCar!");
     }
   });
-  return result;
+  return mutation;
 };
 
 const parkCar = async (params) => {
@@ -56,6 +60,7 @@ const parkCar = async (params) => {
 };
 
 export const useParkCar = (refetchCars) => {
+  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (data) => {
 			return parkCar(data);
@@ -63,12 +68,13 @@ export const useParkCar = (refetchCars) => {
     onSuccess: () => {
       refetchCars();
     },
-    onError: (error) => {
-      console.log(error)
-      alert("Error! ");
+    onSettled: () => {
+      queryClient.invalidateQueries(["cars"]);
+    },
+    onError: () => {
+      alert("Error parkCar!");
     }
   });
-  console.log("mutation: ", mutation)
   return mutation;
 };
 
@@ -83,16 +89,44 @@ const unparkCar = async (params) => {
 };
 
 export const useUnparkCar = (refetchCars) => {
-  const result = useMutation({
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
     mutationFn: (data) => {
 			return unparkCar(data);
 		},
-    onSuccess: (data) => {
+    onSuccess: () => {
       refetchCars();
-      return data;
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["cars"]);
     },
     onError: () => {
-      alert("Error!");
+      alert("Error unparkCar!");
+    }
+  });
+  return mutation;
+};
+
+const deleteCar = async (params) => {
+  const res = await fetch("http://localhost:3000/cars/" + params.id, {
+    method: "DELETE",
+    options: options,
+    headers: headers
+  })
+  return res.json();
+};
+
+export const useDeleteCar = () => {
+  const queryClient = useQueryClient();
+  const result = useMutation({
+    mutationFn: (data) => {
+			return deleteCar(data);
+		},
+    onSettled: (data) => {
+      queryClient.invalidateQueries(["cars", data.id]);
+    },
+    onError: () => {
+      alert("Error delete Parking!");
     }
   });
   return result;
