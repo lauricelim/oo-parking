@@ -15,8 +15,8 @@ class ParkingsController < ApplicationController
 
   def update
     parking = Parking.find(params[:id])
-    if parking.update(params)
-      render json: {success: true}
+    if parking.update(parking_params)
+      render json: parking
     else
       render json: {error: parking.error}
     end
