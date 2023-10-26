@@ -22,6 +22,15 @@ class ParkingsController < ApplicationController
     end
   end
 
+  def destroy
+    parking = Parking.find(params[:id])
+    if parking.destroy
+      render json: {id: params[:id].to_i}
+    else
+      render json: {error: parking.error}
+    end
+  end
+
   private
 
   def parking_params

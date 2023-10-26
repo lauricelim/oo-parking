@@ -1,6 +1,4 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
-
-import {useQueryClient} from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const options = { mode: "cors" };
 const headers = { "Content-Type": "application/json;charset=utf-8" };
@@ -38,14 +36,11 @@ export const useCreateParking = (refetchParkings) => {
     mutationFn: (data) => {
 			createParking(data);
 		},
-    onSuccess: () => {
-      refetchParkings();
-    },
     onSettled: () => {
       queryClient.invalidateQueries(["parkings"]);
     },
     onError: () => {
-      alert("Error!");
+      alert("Error Create parking!");
     }
   });
   return result;
@@ -74,7 +69,32 @@ export const useUpdateParking = (refetchParkings) => {
       queryClient.invalidateQueries(["parkings"]);
     },
     onError: () => {
-      alert("Error!");
+      alert("Error Update Parking!");
+    }
+  });
+  return result;
+};
+
+const deleteParking = async (params) => {
+  const res = await fetch("http://localhost:3000/parkings/" + params.id, {
+    method: "DELETE",
+    options: options,
+    headers: headers
+  })
+  return res.json();
+};
+
+export const useDeleteParking = () => {
+  const queryClient = useQueryClient();
+  const result = useMutation({
+    mutationFn: (data) => {
+			return deleteParking(data);
+		},
+    onSettled: (data) => {
+      queryClient.invalidateQueries(["parkings", data.id]);
+    },
+    onError: () => {
+      alert("Error delete Parking!");
     }
   });
   return result;

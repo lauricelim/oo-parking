@@ -9,7 +9,7 @@ const Home = () => {
 			<h1>
 				Home
 			</h1>
-      <Link to="/parking"><Button variant="contained">Configure Parking</Button></Link>
+      <Link to="/parking"><Button variant="contained" sx={{mr: 2}}>Configure Parking</Button></Link>
       <Link to="/car"><Button variant="contained">Park a Car</Button></Link>
 		</div>
     </>

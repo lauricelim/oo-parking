@@ -1,10 +1,19 @@
 import React, {useState} from "react";
-import { useParkings, useCreateParking, useUpdateParking } from "../api/parkings";
+import { useParkings, useCreateParking, useUpdateParking, useDeleteParking } from "../api/parkings";
 import { Box, TextField, Select, MenuItem, InputLabel, Button, Grid } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 
+const SIZE = {
+	1: "Small",
+	2: "Medium",
+	3: "Large"
+}
 
+const AVAILABLE = {
+	true: "Yes",
+	false: "No"
+}
 
 const Parking = () => {
 	const [entrances, setEntrances] = useState(3)
@@ -15,19 +24,28 @@ const Parking = () => {
 
 	const {isLoading: isParkingLoading, data: parkings, refetch: refetchParkings} = useParkings();
 	const useMutateParking = useCreateParking(refetchParkings);
-	const {mutate: UseMutateUpdatePark, data: updateParkData } = useUpdateParking(refetchParkings);
+	const {mutate: UseMutateUpdatePark } = useUpdateParking(refetchParkings);
+	const {mutate: UseMutateDeletePark, isPending: isDeleteParkPending } = useDeleteParking();
 	
 	const [isEditing, setIsEditing] = useState(false);
 	const [selectedPark, setSelectedPark] = useState({});
 
 	const parkingColumns = [
 		{ field: 'id', headerName: 'ID', width: 90 },
-		{ field: 'size', headerName: 'Size', width: 90 },
+		{ field: 'size', headerName: 'Size', width: 90,
+			valueFormatter: (params) => {
+				return SIZE[params.value];
+			}
+		},
 		{ field: 'distance', headerName: 'Distance', width: 90 },
-		{ field: 'is_available', headerName: 'Available', width: 90 },
+		{ field: 'is_available', headerName: 'Available', width: 90,
+			valueFormatter: (params) => {
+				return AVAILABLE[params.value];
+			}
+		},
 	]
 
-	const addParking = (e) => {	
+	const addParking = () => {	
 		useMutateParking.mutate(parkingParams)
 	}
 
@@ -62,6 +80,11 @@ const Parking = () => {
 		setIsEditing(false);
 	}
 
+	const deleteParking = () => {
+		setIsEditing(false)
+		UseMutateDeletePark(selectedPark)
+	}
+
 	return (
     <>
 		<div>
@@ -72,7 +95,11 @@ const Parking = () => {
 			<Grid container spacing={3} sx={{ml: 2, mr: 3, mt: 2}}>
 				<Grid item xs={3}>
 					{!isEditing && (
-						<Box id="addParkingForm" component="form" onSubmit={addParking} width={200} sx={{mt: 2}}>
+						<Box id="addParkingForm" component="form" onSubmit={addParking} width={200} sx={{
+							marginLeft: 10,
+							alignItems: 'center',
+						}}>
+							<h2>Add a parking</h2>
 							<InputLabel id="entrance-label">Number of Entrance</InputLabel>
 							<Select
 								size="small"
@@ -124,12 +151,16 @@ const Parking = () => {
 						</Box>
 					)}
 					{isEditing && (
-						<Box id="updateParkingForm" component="form" onSubmit={updateParking} width={200} sx={{mt: 2}}>
+						<Box id="updateParkingForm" component="form" onSubmit={updateParking} width={200} sx={{
+							marginLeft: 10,
+							alignItems: 'center'
+						}}>
+							<h2>Edit a parking</h2>
 							<InputLabel id="update-size-label">Size</InputLabel>
 							<Select
 								size="small"
 								labelId="update-size-label"
-								id="update-size-label"
+								id="update-size-select"
 								value={selectedPark.size}
 								onChange={e => setSelectedPark({...selectedPark,...{size: e.target.value}})}
 								sx={{mb: 2}}
@@ -159,13 +190,19 @@ const Parking = () => {
 										sx={{mb: 2}}
 									/>
 							)}
-							<Button id="update" variant="contained" onClick={updateParking}>Save</Button>
-							<Button id="cancel" variant="contained" onClick={cancelEditing}>Cancel</Button>
+							<Button id="update" variant="contained" onClick={updateParking} sx={{mr: 2}}>Save</Button>
+							<Button id="cancel" variant="outlined" onClick={cancelEditing}>Cancel</Button>
+							<Button id="delete" variant="contained" color="error" fullWidth sx={{mt: 2}} 
+								onClick={deleteParking}  disabled={!selectedPark.is_available}
+							>
+								Delete
+							</Button>
 						</Box>
 					)}
 				</Grid>
 				<Grid item xs={4}>
-					{!isParkingLoading && (
+					<h2>Select a row to edit</h2>
+					{!isParkingLoading && !isDeleteParkPending && (
 						<DataGrid
 							rows={parkings}
 							columns={parkingColumns}
